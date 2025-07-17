@@ -6,8 +6,8 @@ const morgan = require('morgan'); // Import morgan for logging HTTP requests
 const bodyParser = require('body-parser'); // Import body-parser to handle JSON requests
 const cors = require('cors'); // Import cors for enabling Cross-Origin Resource Sharing
 require('dotenv/config'); // Load environment variables from .env file
-
-
+const authJwt = require('./helpers/jwt')
+const errorHandler = require('./helpers/error-handler')
 
 app.use(cors());
 app.options('*', cors())
@@ -15,6 +15,8 @@ app.options('*', cors())
 //middlewares
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
 app.use(morgan('tiny')); // Middleware to log HTTP requests in development mode
+app.use(authJwt());
+app.use(errorHandler);
 
 // routers
 const categoriesRoutes = require('./routes/categories');
