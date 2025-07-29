@@ -8,6 +8,8 @@ const cors = require('cors'); // Import cors for enabling Cross-Origin Resource 
 require('dotenv/config'); // Load environment variables from .env file
 const authJwt = require('./helpers/jwt')
 const errorHandler = require('./helpers/error-handler')
+const { swaggerUi, specs } = require('./swagger');
+
 
 app.use(cors());
 app.options('*', cors())
@@ -16,7 +18,11 @@ app.options('*', cors())
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
 app.use(morgan('tiny')); // Middleware to log HTTP requests in development mode
 app.use(authJwt());
+app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
 app.use(errorHandler);
+
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // routers
 const categoriesRoutes = require('./routes/categories');

@@ -2,6 +2,52 @@ const {Category} = require('../models/category');
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: object
+ *       required:
+ *         - name
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Auto-generated id
+ *         name:
+ *           type: string
+ *           description: Category name
+ *         icon:
+ *           type: string
+ *           description: Category icon
+ *         color:
+ *           type: string
+ *           description: Category color
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Categories
+ *   description: Category management
+ */
+
+/**
+ * @swagger
+ * /categories:
+ *   get:
+ *     summary: Get all categories
+ *     tags: [Categories]
+ *     responses:
+ *       200:
+ *         description: List of categories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Category'
+ */
 router.get('/', async (req, res) =>{
     const categoryList = await Category.find();
 
@@ -11,6 +57,29 @@ router.get('/', async (req, res) =>{
     res.status(200).send(categoryList);
 })
 
+/**
+ * @swagger
+ * /categories/{id}:
+ *   get:
+ *     summary: Get category by ID
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Category ID
+ *     responses:
+ *       200:
+ *         description: Category details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *       404:
+ *         description: Category not found
+ */
 router.get('/:id', async (req, res) =>{
     const category = await Category.findById(req.params.id);
 
@@ -20,6 +89,39 @@ router.get('/:id', async (req, res) =>{
     res.status(200).send(category);
 })
 
+/**
+ * @swagger
+ * /categories/{id}:
+ *   put:
+ *     summary: Update category
+ *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               icon:
+ *                 type: string
+ *               color:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Category updated successfully
+ *       404:
+ *         description: Category not found
+ */
 router.put('/:id', async(req, res)=>{
     const category = await Category.findByIdAndUpdate(req.params.id,
         {
@@ -35,6 +137,33 @@ router.put('/:id', async(req, res)=>{
     res.send(category)
 })
 
+/**
+ * @swagger
+ * /categories:
+ *   post:
+ *     summary: Create new category
+ *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               icon:
+ *                 type: string
+ *               color:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Category created successfully
+ *       400:
+ *         description: Bad request
+ */
 router.post('/', async(req,res)=>{
     let category = new Category({
         name: req.body.name,
@@ -49,6 +178,26 @@ router.post('/', async(req,res)=>{
     res.send(category);
 })
 
+/**
+ * @swagger
+ * /categories/{id}:
+ *   delete:
+ *     summary: Delete category
+ *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Category deleted successfully
+ *       404:
+ *         description: Category not found
+ */
 router.delete('/:id', (req,res)=>{
     Category.findByIdAndRemove(req.params.id).then(category=>{
         if(category){
